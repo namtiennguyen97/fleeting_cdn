@@ -11,20 +11,36 @@ function getAParamsUrl(key){
     return param != null ? param : ''
     //out put: true: params : false: ''
 }
-//todo get all params array object
-function getObjParamsUrl(){
-    let url_window = window.location.href;
+//todo get all current url params and convert to object
+//todo get custom url params and convert to object
+function getObjParamsUrl(url_para='', show_alert = false){
     let arrayKey = [], arrayValue = [];
-    let postionParams = parseInt(url_window.indexOf("?"));
-    let getParams = url_window.substring(postionParams);
-    let stringValue = getParams.replace('?','');
-    let slug = Array.from(stringValue.split('&'));
+    if(url_para){
+        if(!url_para.includes("?") || url_para.split("?").length - 1 > 1){
+            show_alert ? console.log('Alert: Your url is isvalid or lack of params') : '';
+            return false;
+        }
+        let postionParams = parseInt(url_para.indexOf("?")),
+            getParams = url_para.substring(postionParams),
+            stringValue = getParams.replace('?',''),
+            slug = Array.from(stringValue.split('&'))
+        ;
+        slug.forEach(function (items,index){
+            let key = items.split('=').shift(), value = items.split('=').pop();
+            arrayKey.push(key) ; arrayValue.push(value);
+        })
+        return Object.assign.apply({}, arrayKey.map( (v, i) => ( {[v]: arrayValue[i]} ) ) );
+    }
+
+    let url_window = window.location.href;
+    let postionParams = parseInt(url_window.indexOf("?")),
+        getParams = url_window.substring(postionParams),
+        stringValue = getParams.replace('?',''),
+        slug = Array.from(stringValue.split('&'))
+    ;
     slug.forEach(function (items,index){
-        let key = items.split('=').shift();
-        let value = items.split('=').pop();
-        arrayKey.push(key);
-        arrayValue.push(value);
+        let key = items.split('=').shift(), value = items.split('=').pop();
+        arrayKey.push(key) ; arrayValue.push(value);
     })
-    let result = Object.assign.apply({}, arrayKey.map( (v, i) => ( {[v]: arrayValue[i]} ) ) );
-    return result;
+    return Object.assign.apply({}, arrayKey.map( (v, i) => ( {[v]: arrayValue[i]} ) ) );
 }
